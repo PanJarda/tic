@@ -1,9 +1,9 @@
-Vize:
-ticketing system v sh, awk, git
-	-stromova struktura podle slozek
-	-kazdej task jeden textak s danou strukturu
-	-na editaci, pridavani novych tasku scripty
-	-scripty provedou vytvoreni, smazani editaci tasku, ulozeni do gitu na serveru
-	-scripty na vykresleni stromu
-
-
+tic init - initialize .tickets repository in our home folder
+tic count [open/closed] - prints number of open and closed tickets
+tic new - new ticket
+tic show [ticnum] - show ticket
+tic list [open/closed] - prints list of open/closed ticketnumbers
+tic open [ticnum] - opens ticket
+tic close [ticnum] - closes ticket
+tic assign [ticnum] [person] - ..
+tic log - shows history of changes
