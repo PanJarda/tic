@@ -7,3 +7,7 @@ tic open [ticnum] - opens ticket
 tic close [ticnum] - closes ticket
 tic assign [ticnum] [person] - ..
 tic log - shows history of changes
+
+TODO:
+- .ticrc
+
