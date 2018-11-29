@@ -1,0 +1,116 @@
+#!/bin/sh
+
+TICKETS_DIR="${HOME}/.tickets/"
+
+new() {
+	id=`ls -r ${TICKETS_DIR} | sed '1q' | awk '{ printf "%03d",$1+1 }'`
+
+	echo -n 'name:'
+	read name
+	echo -n 'status:'
+	read status
+	echo -n 'assigned_to:'
+	read assigned_to
+	echo -n 'estimated_time[hh:mm]:'
+	read estimated_time
+	echo -n 'time_spent[hh:mm]:'
+	read time_spent
+	echo -n 'description:'
+	read description
+	echo "name:$name
+status:$status
+assigned_to:$assigned_to
+estimated_time:$estimated_time
+time_spent:$time_spent
+description:$description" > $TICKETS_DIR/$id
+
+	git -C $TICKETS_DIR add $id > /dev/null
+	git -C $TICKETS_DIR commit -m"added $id" > /dev/null
+
+	echo "ticket $id created"
+}
+
+show() {
+	cat "$TICKETS_DIR$1"
+}
+
+init() {
+	mkdir $TICKETS_DIR
+	git -C $TICKETS_DIR init > /dev/null
+	echo 'done'
+}
+
+list() {
+	grep -l "status:$1" $TICKETS_DIR* | awk 'BEGIN {FS="/"} { print $NF }'
+}
+
+count() {
+	grep -r "status:$1" ${HOME}/.tickets/* | wc -l
+}
+
+open() {
+	awk 'BEGIN {FS=":";OFS=":"} $1 != "status" { print } $1 == "status" { print $1,"open" }' $TICKETS_DIR/$1 > /tmp/$1
+	cp /tmp/$1 $TICKETS_DIR/$1
+	rm /tmp/$1
+
+	git -C $TICKETS_DIR add $1 > /dev/null
+	git -C $TICKETS_DIR commit -m"opened $1" > /dev/null
+
+	echo "ticket $1 opened"
+}
+
+close() {
+	awk 'BEGIN {FS=":";OFS=":"} $1 != "status" { print } $1 == "status" { print $1,"closed" }' $TICKETS_DIR/$1 > /tmp/$1
+	cp /tmp/$1 $TICKETS_DIR/$1
+	rm /tmp/$1
+
+	git -C $TICKETS_DIR add $1 > /dev/null
+	git -C $TICKETS_DIR commit -m"closed $1" > /dev/null
+
+	echo "ticket $id closed"
+}
+
+assign() {
+	echo $1
+	echo $2
+	awk "BEGIN {FS=\":\";OFS=\":\"} \$1 != \"assigned_to\" { print } \$1 == \"assigned_to\" { print \$1, \"$2\" }" $TICKETS_DIR/$1 > /tmp/$1
+	cp /tmp/$1 $TICKETS_DIR/$1
+	rm /tmp/$1
+
+	git -C $TICKETS_DIR add $1 > /dev/null
+	git -C $TICKETS_DIR commit -m"assgned $1 to $2"
+
+	echo "assgned $1 to $2"
+}
+
+log() {
+	git -C $TICKETS_DIR log
+}
+
+help() {
+	echo 'tic init - initialize .tickets repository in our home folder
+tic count [open/closed] - prints number of open and closed tickets
+tic new - new ticket
+tic show [ticnum] - show ticket
+tic list [open/closed] - prints list of open/closed ticketnumbers
+tic open [ticnum] - opens ticket
+tic close [ticnum] - closes ticket
+tic assign [ticnum] [person] - ..
+tic log - shows history of changes'
+}
+
+case $1 in
+	'init' ) init;;
+	'count' ) count $2;;
+	'new' ) new;;
+	'show' ) show $2;;
+	'list' ) list $2;;
+	'open' ) open $2;;
+	'assign' ) assign $2 $3;;
+	'log' ) log;;
+	'close' ) close $2;;
+	'help' ) help;;
+	* ) exit;;
+esac
+
+# git -C $TICKETS_DIR push

@@ -1,0 +1,9 @@
+Vize:
+ticketing system v sh, awk, git
+	-stromova struktura podle slozek
+	-kazdej task jeden textak s danou strukturu
+	-na editaci, pridavani novych tasku scripty
+	-scripty provedou vytvoreni, smazani editaci tasku, ulozeni do gitu na serveru
+	-scripty na vykresleni stromu
+
+
